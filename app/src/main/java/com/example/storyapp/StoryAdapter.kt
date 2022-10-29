@@ -43,7 +43,7 @@ class StoryAdapter :
     }
 
     companion object {
-        private val DiffCallback = object : DiffUtil.ItemCallback<Stories>() {
+        val DiffCallback = object : DiffUtil.ItemCallback<Stories>() {
             override fun areItemsTheSame(oldItem: Stories, newItem: Stories): Boolean {
                 return oldItem == newItem
             }

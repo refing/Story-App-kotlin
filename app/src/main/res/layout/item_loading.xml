@@ -7,7 +7,7 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/error_msg"
+        android:id="@+id/errorMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -16,14 +16,14 @@
         tools:text="Timeout" />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
     <Button
-        android:id="@+id/retry_button"
+        android:id="@+id/retryButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

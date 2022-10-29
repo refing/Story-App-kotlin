@@ -57,12 +57,12 @@ class MainActivity : AppCompatActivity() {
             this.finish()
         }
 
-        showRecyclerList()
+        showRecyclerList(bearer)
     }
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
-    private fun showRecyclerList() {
+    private fun showRecyclerList(bearer:String) {
 
         if (applicationContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             binding.rvStory.layoutManager = GridLayoutManager(this, 2)
@@ -76,9 +76,13 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        mainViewModel.listStory.observe(this, {
-            listUserAdapter.submitData(lifecycle,it)
-        })
+//        mainViewModel.listStory.observe(this, {
+//            listUserAdapter.submitData(lifecycle,it)
+//        })
+
+        mainViewModel.getStories(bearer).observe(this) { result ->
+            listUserAdapter.submitData(lifecycle,result)
+        }
 
     }
 

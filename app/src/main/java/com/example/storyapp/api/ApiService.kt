@@ -23,12 +23,12 @@ interface ApiService {
         @Field("password") password: String
     ): Call<RegisterResponse>
 
-    //get stories need auth
-    @GET("stories")
-    fun getStories(
-        @Header("Authorization") bearer: String?,
-
-    ): Call<StoriesResponse>
+//    //get stories need auth
+//    @GET("stories")
+//    fun getStories(
+//        @Header("Authorization") bearer: String?,
+//
+//    ): Call<StoriesResponse>
 
     //post stories need auth
     @Multipart
@@ -44,10 +44,10 @@ interface ApiService {
 
     //get stories location need auth
     @GET("stories?location=1")
-    fun getStoriesLoc(
+    suspend fun getStoriesLoc(
         @Header("Authorization") bearer: String?,
 
-    ): Call<StoriesResponse>
+    ): StoriesResponse
 
     //get stories need auth page and size
     @GET("stories")

@@ -4,11 +4,11 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Story(
-    var id: String = "0",
-    var name: String? = null,
-    var description: String? = null,
-    var photoUrl: String? = null,
-    var lat: Double? = null,
-    var lon: Double? = null,
+class Story(
+    val id: String,
+    val name: String,
+    val description: String,
+    val photoUrl: String,
+    val lat: Double? = null,
+    val lon: Double? = null,
 ) : Parcelable

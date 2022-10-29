@@ -22,7 +22,6 @@
         tools:visibility="visible" />
 
     <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutDescription="@xml/fragment_login_xml_constraintlayout_scene">
