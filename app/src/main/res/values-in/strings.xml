@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="password">Kata Sandi</string>
+    <string name="email">Email</string>
+    <string name="nama">Masukkan Nama</string>
+    <string name="register">Daftar</string>
+    <string name="login">Masuk</string>
+    <string name="users_name">Nama</string>
+    <string name="deskripsi">Deskripsi</string>
+    <string name="addstory_button">Tambahkan Cerita</string>a
+    <string name="camera_x">Kamera X</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="upload">Unggah</string>
+    <string name="hint">Tambahkan deskripsi cerita</string>
+    <string name="logout">Keluar</string>
+</resources>

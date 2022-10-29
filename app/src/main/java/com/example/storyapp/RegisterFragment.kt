@@ -13,9 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.transition.TransitionInflater
 import com.example.storyapp.api.ApiConfig
-import com.example.storyapp.api.Login
-import com.example.storyapp.api.LoginResponse
 import com.example.storyapp.api.RegisterResponse
 import com.example.storyapp.customview.EmailText
 import com.example.storyapp.customview.LoginButton
@@ -24,27 +23,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RegisterFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RegisterFragment : Fragment(), View.OnClickListener {
     private lateinit var loginButton: LoginButton
     private lateinit var emailText: EmailText
     private lateinit var passwordText: PasswordText
     private lateinit var nameText: EditText
     private lateinit var progressBar: ProgressBar
-    private lateinit var tvstat: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
 
@@ -82,8 +69,6 @@ class RegisterFragment : Fragment(), View.OnClickListener {
             postRegister(nameText.text.toString(),emailText.text.toString(),passwordText.text.toString())
             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
-
-//            Toast.makeText(activity, "email: ${emailText.text}\npassword: ${passwordText.text}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -99,7 +84,6 @@ class RegisterFragment : Fragment(), View.OnClickListener {
             val mFragmentManager = parentFragmentManager
             mFragmentManager.beginTransaction().apply {
                 replace(R.id.frame_container, mLoginFragment, LoginFragment::class.java.simpleName)
-//                addToBackStack(null)
                 commit()
             }
         }

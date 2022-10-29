@@ -36,7 +36,7 @@ class EmailText : AppCompatEditText, View.OnTouchListener {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.toString().isNotEmpty()) showClearButton() else hideClearButton()
-                if (!Patterns.EMAIL_ADDRESS.matcher(s.toString()).matches()) error = "Masukkan email valid"
+                if (!Patterns.EMAIL_ADDRESS.matcher(s).matches()) error = "Masukkan email valid"
             }
             override fun afterTextChanged(s: Editable) {
                 // Do nothing.

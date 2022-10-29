@@ -1,7 +1,6 @@
 package com.example.storyapp
 
 import android.Manifest
-import android.content.ContentResolver
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
@@ -10,7 +9,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.InputType
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -32,14 +30,14 @@ import java.io.File
 class AddStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddStoryBinding
     private var getFile: File? = null
-    private val bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLWlZc01tTUF3RWpPY01ieXAiLCJpYXQiOjE2NjQwNDk2MDh9.aXLES4iX00ROVG8HHoYKzsNhq0xUC6AN8n8Gpi2zuBo"
-
+    private var bearer: String = ""
 
     companion object {
         const val CAMERA_X_RESULT = 200
-
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
+        private val TAG = AddStoryActivity::class.java.simpleName
+        const val EXTRA_TOKEN = "extra_token"
     }
 
     override fun onRequestPermissionsResult(
@@ -76,11 +74,13 @@ class AddStoryActivity : AppCompatActivity() {
                 REQUEST_CODE_PERMISSIONS
             )
         }
-//        binding.tvDeskripsistory.inputType = InputType.TYPE_CLASS_TEXT
         binding.cameraXButton.setOnClickListener { startCameraX() }
         binding.cameraButton.setOnClickListener { startTakePhoto() }
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.uploadButton.setOnClickListener { uploadImage() }
+
+        bearer = intent.getStringExtra(AddStoryActivity.EXTRA_TOKEN) as String
+
     }
 
     private fun startCameraX() {
@@ -123,7 +123,7 @@ class AddStoryActivity : AppCompatActivity() {
                 file.name,
                 requestImageFile
             )
-            val service = ApiConfig.getApiService().postStory(bearer,imageMultipart, description)
+            val service = ApiConfig.getApiService().postStory("Bearer ${bearer}",imageMultipart, description)
             service.enqueue(object : Callback<PostStoryResponse> {
                 override fun onResponse(
                     call: Call<PostStoryResponse>,
@@ -185,7 +185,6 @@ class AddStoryActivity : AppCompatActivity() {
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             val selectedImg: Uri = result.data?.data as Uri
 
-//            val contentResolver: ContentResolver = contentResolver
             val myFile = uriToFile(selectedImg, this@AddStoryActivity)
 
             getFile = myFile

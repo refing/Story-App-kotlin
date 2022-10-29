@@ -35,7 +35,7 @@ class LoginButton : AppCompatButton {
     }
 
     private fun init() {
-        txtColor = ContextCompat.getColor(context, android.R.color.background_light)
+        txtColor = ContextCompat.getColor(context, android.R.color.background_dark)
         enabledBackground = ContextCompat.getDrawable(context, R.drawable.bg_button) as Drawable
         disabledBackground = ContextCompat.getDrawable(context, R.drawable.bg_button_disable) as Drawable
     }

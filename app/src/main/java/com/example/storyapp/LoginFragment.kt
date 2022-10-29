@@ -1,7 +1,5 @@
 package com.example.storyapp
 
-//import com.example.storyapp.databinding.FragmentLoginBinding
-import android.R.attr.password
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -28,20 +26,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LoginFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LoginFragment : Fragment(), View.OnClickListener  {
-//    private var _binding: FragmentQuestionBinding? = null
-//    // This property is only valid between onCreateView and onDestroyView.
-//    private val binding get() = _binding!!
 
     private lateinit var sessionModel: SessionModel
 
@@ -54,7 +39,6 @@ class LoginFragment : Fragment(), View.OnClickListener  {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
@@ -102,7 +86,6 @@ class LoginFragment : Fragment(), View.OnClickListener  {
             val mFragmentManager = parentFragmentManager
             mFragmentManager.beginTransaction().apply {
                 replace(R.id.frame_container, mRegisterFragment, RegisterFragment::class.java.simpleName)
-//                addToBackStack(null)
                 commit()
             }
         }
@@ -143,14 +126,10 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         userPreference = Preference(this.requireContext())
         sessionModel = SessionModel(login.name,login.token)
         userPreference.setSession(sessionModel)
-        Log.e(TAG, "tes login: ${userPreference.getSession().name}")
-        Log.e(TAG, "tes login: ${userPreference.getSession().token}")
-
         val mRegisterFragment = RegisterFragment()
         val mFragmentManager = parentFragmentManager
         mFragmentManager.beginTransaction().apply {
             replace(R.id.frame_container, mRegisterFragment, RegisterFragment::class.java.simpleName)
-//                addToBackStack(null)
             commit()
         }
 
@@ -159,14 +138,11 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         moveWithObjectIntent.putExtra(MainActivity.EXTRA_TOKEN, login.token)
         moveWithObjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(moveWithObjectIntent)
-
         activity?.finish()
     }
 
     companion object {
         private val TAG = LoginFragment::class.java.simpleName
-        const val EXTRA_TOKEN = "extra_token"
-        const val EXTRA_RESULT = "extra_result"
     }
 
     override fun onStart() {

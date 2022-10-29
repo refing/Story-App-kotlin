@@ -2,18 +2,16 @@
     <string name="app_name">StoryApp</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="nama">Masukkan Nama</string>
+    <string name="nama">Insert Name</string>
     <string name="register">Register</string>
     <string name="login">Login</string>
     <string name="users_name">Name</string>
-    <string name="deskripsi">deskripsi</string>
+    <string name="deskripsi">Description</string>
     <string name="addstory_button">Add Story</string>
     <string name="camera_x">Camera X</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="upload">Upload</string>
-    <string name="hint">Masukkan Deskripsi Story</string>
-    <string name="logout">LOG OUT</string>
+    <string name="hint">Insert story description</string>
+    <string name="logout">Log out</string>
 </resources>

@@ -15,6 +15,7 @@
         android:adjustViewBounds="true"
         android:maxWidth="139dp"
         android:scaleType="centerCrop"
+        android:transitionName="foto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +32,7 @@
         android:text="@string/nama"
         android:textAlignment="textStart"
         android:textStyle="bold"
+        android:transitionName="nama"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,6 +47,7 @@
         android:layout_marginEnd="16dp"
         android:text="@string/deskripsi"
         android:textAlignment="textStart"
+        android:transitionName="deskripsi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_nama" />

@@ -1,9 +1,7 @@
 package com.example.storyapp
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.storyapp.databinding.ItemStoryBinding
@@ -23,7 +21,7 @@ class StoryAdapter(private val listStory: ArrayList<Story>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        val (id, name, description,  photoUrl) = listStory[position]
+        val (id,name, description, photoUrl) = listStory[position]
         Glide.with(holder.itemView.context)
             .load(photoUrl)
             .into(holder.binding.imgItemPhoto)

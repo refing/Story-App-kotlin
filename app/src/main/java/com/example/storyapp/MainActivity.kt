@@ -1,12 +1,12 @@
 package com.example.storyapp
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.api.*
@@ -23,12 +23,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
 
-    private val bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLWlZc01tTUF3RWpPY01ieXAiLCJpYXQiOjE2NjQwNDk2MDh9.aXLES4iX00ROVG8HHoYKzsNhq0xUC6AN8n8Gpi2zuBo"
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -37,10 +34,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.rvStory.setHasFixedSize(true)
         binding.tvTitle.text = "Welcome, ${sessionModel.name}"
-        Log.e(TAG, "tes main: ${sessionModel.name}")
-        Log.e(TAG, "tes main: ${sessionModel.token}")
         binding.fabAddstory.setOnClickListener {
             val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
+            moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
             startActivity(moveIntent)
         }
         binding.btnLogout.setOnClickListener{
@@ -60,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun getStories() {
         showLoading(true)
-        val client = ApiConfig.getApiService().getStories(bearer)
+        val client = ApiConfig.getApiService().getStories("Bearer ${sessionModel.token}")
         client.enqueue(object : Callback<StoriesResponse> {
             override fun onResponse(
                 call: Call<StoriesResponse>,

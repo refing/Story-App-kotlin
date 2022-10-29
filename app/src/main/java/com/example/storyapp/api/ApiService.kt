@@ -27,18 +27,17 @@ interface ApiService {
     @GET("stories")
     fun getStories(
         @Header("Authorization") bearer: String?,
-//        @Query("page") page: Int?,
-//        @Query("size") size: Int?,
+
     ): Call<StoriesResponse>
 
+    //post stories need auth
     @Multipart
     @POST("stories")
     fun postStory(
         @Header("Authorization") bearer: String?,
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
-//        @Part("lat") page: Float?,
-//        @Part("lon") size: Float?,
+
     ): Call<PostStoryResponse>
 
 }
