@@ -37,7 +37,7 @@ class PasswordText : AppCompatEditText, View.OnTouchListener {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.toString().isNotEmpty()) showClearButton() else hideClearButton()
-                if (s.length < 7) error = "password kurang dari 6 karakter"
+                if (s.length < 6) error = "password kurang dari 6 karakter"
             }
             override fun afterTextChanged(s: Editable) {
                 // Do nothing.
