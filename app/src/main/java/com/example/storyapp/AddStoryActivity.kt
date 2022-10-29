@@ -77,7 +77,10 @@ class AddStoryActivity : AppCompatActivity() {
         binding.cameraXButton.setOnClickListener { startCameraX() }
         binding.cameraButton.setOnClickListener { startTakePhoto() }
         binding.galleryButton.setOnClickListener { startGallery() }
-        binding.uploadButton.setOnClickListener { uploadImage() }
+        binding.uploadButton.setOnClickListener {
+            uploadImage()
+            this.finish()
+        }
 
         bearer = intent.getStringExtra(AddStoryActivity.EXTRA_TOKEN) as String
 
@@ -136,7 +139,9 @@ class AddStoryActivity : AppCompatActivity() {
                             // back to home
                             // refresh home
                             val moveIntent = Intent(this@AddStoryActivity, MainActivity::class.java)
+                            moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(moveIntent)
+
                         }
                     } else {
                         Toast.makeText(this@AddStoryActivity, response.message(), Toast.LENGTH_SHORT).show()

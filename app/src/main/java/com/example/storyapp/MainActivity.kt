@@ -93,7 +93,8 @@ class MainActivity : AppCompatActivity() {
                 val responseBody = response.body()
                 if (response.isSuccessful && responseBody != null) {
                     //populating rv
-                    setRestaurantData(responseBody.listStory)
+                    listStory.clear()
+                    setStoryData(responseBody.listStory)
                     showRecyclerList()
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")
@@ -105,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-    private fun setRestaurantData(data: List<Stories>) {
+    private fun setStoryData(data: List<Stories>) {
         for (stories in data) {
             listStory.add(
                 Story(
