@@ -40,4 +40,12 @@ interface ApiService {
 
     ): Call<PostStoryResponse>
 
+    //get stories location need auth
+    @GET("stories?location=1")
+    fun getStoriesLoc(
+        @Header("Authorization") bearer: String?,
+
+        ): Call<StoriesResponse>
+
+
 }

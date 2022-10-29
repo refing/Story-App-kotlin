@@ -32,12 +32,17 @@ class MainActivity : AppCompatActivity() {
         mSessionPreference = Preference(this)
         sessionModel = mSessionPreference.getSession()
 
+
         binding.rvStory.setHasFixedSize(true)
         binding.tvTitle.text = resources.getString(R.string.welcome_s, sessionModel.name)
         binding.fabAddstory.setOnClickListener {
             val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
             moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
             startActivity(moveIntent)
+        }
+        binding.fabMaps.setOnClickListener {
+            val moveIntentMaps = Intent(this@MainActivity, MapsActivity::class.java)
+            startActivity(moveIntentMaps)
         }
         binding.btnLogout.setOnClickListener{
             sessionModel = SessionModel("","")
@@ -64,6 +69,10 @@ class MainActivity : AppCompatActivity() {
         binding.fabAddstory.setOnClickListener {
             val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
             moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
+            startActivity(moveIntent)
+        }
+        binding.fabMaps.setOnClickListener {
+            val moveIntent = Intent(this@MainActivity, MapsActivity::class.java)
             startActivity(moveIntent)
         }
         binding.btnLogout.setOnClickListener{
@@ -114,6 +123,8 @@ class MainActivity : AppCompatActivity() {
                     stories.name,
                     stories.description,
                     stories.photoUrl,
+                    stories.lon,
+                    stories.lat
                 )
             )
         }

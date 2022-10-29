@@ -55,6 +55,12 @@ data class Stories (
 
     @field:SerializedName("photoUrl")
     val photoUrl: String,
+
+    @field:SerializedName("lat")
+    val lat: Double,
+
+    @field:SerializedName("lon")
+    val lon: Double,
 )
 
 data class PostStoryResponse (
