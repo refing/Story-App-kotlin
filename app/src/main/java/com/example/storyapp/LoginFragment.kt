@@ -15,15 +15,13 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.storyapp.api.ApiConfig
+import androidx.fragment.app.viewModels
 import com.example.storyapp.api.Login
-import com.example.storyapp.api.LoginResponse
 import com.example.storyapp.customview.EmailText
 import com.example.storyapp.customview.LoginButton
 import com.example.storyapp.customview.PasswordText
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.storyapp.util.Preference
+import com.example.storyapp.util.SessionModel
 
 
 class LoginFragment : Fragment(), View.OnClickListener  {
@@ -37,6 +35,8 @@ class LoginFragment : Fragment(), View.OnClickListener  {
     private lateinit var btnReg: Button
     private lateinit var userPreference : Preference
 
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login, container, false)
@@ -44,6 +44,11 @@ class LoginFragment : Fragment(), View.OnClickListener  {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireActivity())
+        val mainViewModel: LoginViewModel by viewModels {
+            factory
+        }
 
         btnReg = view.findViewById(R.id.btn_register)
         btnReg.setOnClickListener(this)
@@ -74,9 +79,19 @@ class LoginFragment : Fragment(), View.OnClickListener  {
             }
         })
         loginButton.setOnClickListener {
-            postLogin(emailText.text.toString(),passwordText.text.toString())
-            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            showLoading(true)
+            mainViewModel.postLoginV(emailText.text.toString(),passwordText.text.toString()).observe(viewLifecycleOwner) { result ->
+                result.onSuccess {  response ->
+                    Toast.makeText(activity, "Login berhasil.", Toast.LENGTH_SHORT).show()
+                    setSessionData(response.loginResult)
+                    val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+                result.onFailure {
+                    Toast.makeText(activity, "Login gagal.", Toast.LENGTH_SHORT).show()
+                    showLoading(false)
+                }
+            }
 
         }
     }
@@ -98,30 +113,6 @@ class LoginFragment : Fragment(), View.OnClickListener  {
     private fun showLoading(isLoading: Boolean) {
         progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
-    private fun postLogin(email: String,password: String) {
-        showLoading(true)
-        val client = ApiConfig.getApiService().postLogin(email,password)
-        client.enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(
-                call: Call<LoginResponse>,
-                response: Response<LoginResponse>
-            ) {
-                showLoading(false)
-                val responseBody = response.body()
-                if (response.isSuccessful && responseBody != null) {
-                    setSessionData(responseBody.loginResult)
-
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                    Toast.makeText(activity, response.message(), Toast.LENGTH_LONG).show()
-                }
-            }
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                showLoading(false)
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
-    }
     private fun setSessionData(login: Login) {
         userPreference = Preference(this.requireContext())
         sessionModel = SessionModel(login.name,login.token)
@@ -139,10 +130,6 @@ class LoginFragment : Fragment(), View.OnClickListener  {
         moveWithObjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(moveWithObjectIntent)
         activity?.finish()
-    }
-
-    companion object {
-        private val TAG = LoginFragment::class.java.simpleName
     }
 
     override fun onStart() {

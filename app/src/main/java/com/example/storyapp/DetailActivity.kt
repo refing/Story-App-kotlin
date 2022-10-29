@@ -24,5 +24,4 @@ class DetailActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_STORY = "extra_story"
     }
-
 }

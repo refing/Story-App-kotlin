@@ -11,13 +11,13 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.example.storyapp.api.ApiConfig
-import com.example.storyapp.api.PostStoryResponse
 import com.example.storyapp.databinding.ActivityAddStoryBinding
 import com.google.android.gms.location.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -25,9 +25,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 
 class AddStoryActivity : AppCompatActivity() {
@@ -35,6 +32,11 @@ class AddStoryActivity : AppCompatActivity() {
     private var getFile: File? = null
     private var bearer: String = ""
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    val factory: ViewModelFactory = ViewModelFactory.getInstance(this)
+    private val mainViewModel: MainViewModel by viewModels {
+        factory
+    }
 
 
     companion object {
@@ -92,12 +94,16 @@ class AddStoryActivity : AppCompatActivity() {
                 binding.tvlon.text = lon
             }
         }
+//        binding.tvDeskripsistory.text = "default"
 
         binding.cameraXButton.setOnClickListener { startCameraX() }
         binding.cameraButton.setOnClickListener { startTakePhoto() }
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.uploadButton.setOnClickListener {
             uploadImage()
+            val moveIntent = Intent(this@AddStoryActivity, MainActivity::class.java)
+            moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(moveIntent)
             this.finish()
         }
     }
@@ -136,7 +142,7 @@ class AddStoryActivity : AppCompatActivity() {
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
 
-            val description = binding.tvDeskripsistory.text.toString().toRequestBody("text/plain".toMediaType())
+            val description = if (binding.tvDeskripsistory.text.toString().equals("")) "default".toRequestBody("text/plain".toMediaType()) else binding.tvDeskripsistory.text.toString().toRequestBody("text/plain".toMediaType())
             val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
             val lat2 = binding.tvlat.text.toString().toRequestBody("text/plain".toMediaType())
             val lon2 = binding.tvlon.text.toString().toRequestBody("text/plain".toMediaType())
@@ -145,29 +151,16 @@ class AddStoryActivity : AppCompatActivity() {
                 file.name,
                 requestImageFile
             )
-            val service = ApiConfig.getApiService().postStory("Bearer ${bearer}",imageMultipart, description, lat2, lon2)
-            service.enqueue(object : Callback<PostStoryResponse> {
-                override fun onResponse(
-                    call: Call<PostStoryResponse>,
-                    response: Response<PostStoryResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                        if (responseBody != null && !responseBody.error) {
-                            Toast.makeText(this@AddStoryActivity, responseBody.message, Toast.LENGTH_SHORT).show()
-                            val moveIntent = Intent(this@AddStoryActivity, MainActivity::class.java)
-                            moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(moveIntent)
+            mainViewModel.postStoryV(bearer,imageMultipart,description,lat2,lon2).observe(this) { result ->
+                result.onSuccess {
+                    Toast.makeText(this@AddStoryActivity, "Berhasil menambah cerita.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                result.onFailure {
+                    Toast.makeText(this@AddStoryActivity, "Gagal menambah cerita.", Toast.LENGTH_SHORT).show()
 
-                        }
-                    } else {
-                        Toast.makeText(this@AddStoryActivity, response.message(), Toast.LENGTH_SHORT).show()
-                    }
                 }
-                override fun onFailure(call: Call<PostStoryResponse>, t: Throwable) {
-                    Toast.makeText(this@AddStoryActivity, "Gagal instance Retrofit", Toast.LENGTH_SHORT).show()
-                }
-            })
+            }
         } else {
             Toast.makeText(this@AddStoryActivity, "Silakan masukkan berkas gambar terlebih dahulu.", Toast.LENGTH_SHORT).show()
         }

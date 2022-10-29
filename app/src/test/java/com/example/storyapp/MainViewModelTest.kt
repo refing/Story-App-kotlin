@@ -1,19 +1,15 @@
 package com.example.storyapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.paging.*
 import androidx.recyclerview.widget.ListUpdateCallback
+import com.example.storyapp.api.PostStoryResponse
 import com.example.storyapp.api.Stories
+import com.example.storyapp.dummy.DataDummy
 import com.example.storyapp.paging.StoryRepository
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
-//import com.example.storyapp.paging.Result
+import com.example.storyapp.util.MainDispatcherRule
+import com.example.storyapp.util.StoryPagingSourceTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -32,7 +28,6 @@ import org.mockito.junit.MockitoJUnitRunner
 @ExperimentalPagingApi
 @RunWith(MockitoJUnitRunner::class)
 class MainViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -58,9 +53,9 @@ class MainViewModelTest {
         val data: PagingData<Stories> = StoryPagingSourceTest.snapshot(dummyStory)
         val expectedStory = MutableLiveData<PagingData<Stories>>()
         expectedStory.value = data
-        `when`(mockstoryRepository.getStory(dummyToken)).thenReturn(expectedStory)
+        `when`(mockstoryRepository.getStoriesRepo(dummyToken)).thenReturn(expectedStory)
 
-        val actualStory: PagingData<Stories> = mainViewModel.getStories(dummyToken).getOrAwaitValue()
+        val actualStory: PagingData<Stories> = mainViewModel.getStoriesV(dummyToken).getOrAwaitValue()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.DiffCallback,
@@ -71,10 +66,9 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        Mockito.verify(mockstoryRepository).getStory(dummyToken)
+        Mockito.verify(mockstoryRepository).getStoriesRepo(dummyToken)
         Assert.assertNotNull(differ.snapshot())
         Assert.assertEquals(dummyStory.size, differ.snapshot().size)
-
     }
 
     @Test
@@ -84,30 +78,31 @@ class MainViewModelTest {
         expectedStory.value = Result.success(dummyStory)
         `when`(mockstoryRepository.getStoriesLocRepo(dummyToken)).thenReturn(expectedStory)
 
-        val actualStory = mainViewModel.getStoriesLocation(dummyToken).getOrAwaitValue()
+        val actualStory: Result<List<Stories>> = mainViewModel.getStoriesLocationV(dummyToken).getOrAwaitValue()
 
-//        mainViewModel.getStoriesLocation(bearer).observe(this) { result ->
-//            result.onSuccess { response ->
-//                response.forEach{ story ->
-//
-//                }
-//            }
-//        }
-//        actualStory.value.let {
-//            assertThat(it, `is`(notNullValue()))
-//            if (it is Resource.Success) {
-//                it.data?.let { data ->
-//                    assertTrue(data.films.isNotEmpty())
-//                    assertTrue(data.species.isNotEmpty())
-//                }
-//            }
-//        }
         Mockito.verify(mockstoryRepository).getStoriesLocRepo(dummyToken)
         Assert.assertNotNull(actualStory)
-//        Assert.assertTrue(actualStory is Result.success(dummyStory))
-//        Assert.assertEquals(dummyStory.size, (actualStory as Result.Success).data.size)
-//        Assert.assertEquals(dummyStory.size, Result.success(actualStory).data.size)
+    }
 
+    @Test
+    fun `when Post Stories Should Return Success`() = runTest {
+        val dummyStory = DataDummy.generateDummyPostStoriesResponse()
+        val dummyMultipart = DataDummy.generateDummyMultipartFile()
+        val dummyRequestBody = DataDummy.generateDummyRequestBody()
+        val expectedStory = MutableLiveData<Result<PostStoryResponse>>()
+        expectedStory.value = Result.success(dummyStory)
+        Mockito.`when`(mockstoryRepository.postStoryRepo(dummyToken,
+            dummyMultipart,dummyRequestBody,
+            dummyRequestBody,dummyRequestBody)).thenReturn(expectedStory)
+
+        val actualStory = mainViewModel.postStoryV(dummyToken,
+            dummyMultipart,dummyRequestBody,
+            dummyRequestBody,dummyRequestBody).getOrAwaitValue()
+
+        Mockito.verify(mockstoryRepository).postStoryRepo(dummyToken,
+            dummyMultipart,dummyRequestBody,
+            dummyRequestBody,dummyRequestBody)
+        Assert.assertNotNull(actualStory)
     }
 
     val noopListUpdateCallback = object : ListUpdateCallback {

@@ -7,6 +7,8 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.storyapp.databinding.ActivityMapsBinding
+import com.example.storyapp.util.Preference
+import com.example.storyapp.util.SessionModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -21,8 +23,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
 
+    val factory: ViewModelFactory = ViewModelFactory.getInstance(this)
     private val mainViewModel: MainViewModel by viewModels {
-        ViewModelFactory(this)
+        factory
     }
     private var bearer: String = ""
 
@@ -36,11 +39,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         sessionModel = mSessionPreference.getSession()
 
         bearer = sessionModel.token ?: ""
-
-        mainViewModel.isLoading.observe(this, {
-            showLoading(it)
-        })
-
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -70,7 +68,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setStoryData() {
-        mainViewModel.getStoriesLocation(bearer).observe(this) { result ->
+        showLoading(true)
+        mainViewModel.getStoriesLocationV(bearer).observe(this) { result ->
             result.onSuccess { response ->
                 response.forEach{ story ->
                     val latLng = LatLng(story.lat, story.lon)
@@ -89,6 +88,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         300
                     )
                 )
+                showLoading(false)
             }
         }
     }

@@ -1,31 +1,25 @@
 package com.example.storyapp
 
-import android.content.Context
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.storyapp.api.Stories
-import com.example.storyapp.paging.Injection
 import com.example.storyapp.paging.StoryRepository
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 
 class MainViewModel (private val storyRepository: StoryRepository): ViewModel() {
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    fun getStoriesV(token: String): LiveData<PagingData<Stories>> =
+        storyRepository.getStoriesRepo(token).cachedIn(viewModelScope)
 
-    fun getStories(token: String): LiveData<PagingData<Stories>> =
-        storyRepository.getStory(token).cachedIn(viewModelScope)
-
-    fun getStoriesLocation(token: String) =
+    fun getStoriesLocationV(token: String) =
         storyRepository.getStoriesLocRepo(token)
 
-}
-class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return MainViewModel(Injection.provideRepository(context)) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
+    fun postStoryV(token:String,
+                  imageMultipart: MultipartBody.Part,
+                  description: RequestBody,
+                  lat2: RequestBody,
+                  lon2: RequestBody) =
+        storyRepository.postStoryRepo(token,imageMultipart,description,lat2,lon2)
 }

@@ -1,26 +1,20 @@
 package com.example.storyapp
 
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.example.storyapp.api.ApiConfig
-import com.example.storyapp.api.RegisterResponse
 import com.example.storyapp.customview.EmailText
 import com.example.storyapp.customview.LoginButton
 import com.example.storyapp.customview.PasswordText
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RegisterFragment : Fragment(), View.OnClickListener {
     private lateinit var loginButton: LoginButton
@@ -36,6 +30,12 @@ class RegisterFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireActivity())
+        val mainViewModel: LoginViewModel by viewModels {
+            factory
+        }
+
         val btnlogin: Button = view.findViewById(R.id.btn_login)
         btnlogin.setOnClickListener(this)
         progressBar = view.findViewById(R.id.progressBar)
@@ -65,7 +65,17 @@ class RegisterFragment : Fragment(), View.OnClickListener {
             }
         })
         loginButton.setOnClickListener {
-            postRegister(nameText.text.toString(),emailText.text.toString(),passwordText.text.toString())
+            showLoading(true)
+            mainViewModel.postRegisterV(nameText.text.toString(),emailText.text.toString(),passwordText.text.toString()).observe(viewLifecycleOwner) { result ->
+                result.onSuccess {
+                    Toast.makeText(activity, "Berhasil membuat akun.", Toast.LENGTH_SHORT).show()
+                    showLoading(false)
+                }
+                result.onFailure {
+                    Toast.makeText(activity, "Gagal membuat akun.", Toast.LENGTH_SHORT).show()
+                    showLoading(false)
+                }
+            }
             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
@@ -89,29 +99,5 @@ class RegisterFragment : Fragment(), View.OnClickListener {
     }
     private fun showLoading(isLoading: Boolean) {
         progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
-    private fun postRegister(name: String, email: String,password: String) {
-        showLoading(true)
-        val client = ApiConfig.getApiService().postRegister(name,email,password)
-        client.enqueue(object : Callback<RegisterResponse> {
-            override fun onResponse(
-                call: Call<RegisterResponse>,
-                response: Response<RegisterResponse>
-            ) {
-                showLoading(false)
-                val responseBody = response.body()
-                if (response.isSuccessful && responseBody != null) {
-                    Toast.makeText(activity, responseBody.message, Toast.LENGTH_LONG).show()
-                }
-                else {
-                    Log.e(ContentValues.TAG, "onFailure: ${response.message()}")
-                    Toast.makeText(activity, response.message(), Toast.LENGTH_LONG).show()
-                }
-            }
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                showLoading(false)
-                Log.e(ContentValues.TAG, "onFailure: ${t.message}")
-            }
-        })
     }
 }

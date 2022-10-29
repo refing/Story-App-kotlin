@@ -1,0 +1,41 @@
+MainViewModel : testing dengan mockito
+	- getStoriesV
+		Ketika berhasil mengambil data stories.
+			Memastikan data tidak null.
+			Memastikan jumlah data sesuai dengan yang diharapkan.
+	- getStoriesLocationV
+		Ketika berhasil mengambil data stories with location.
+			Memastikan data tidak null.
+	- postStoryV
+		Ketika berhasil menambahkan data story.
+			Memastikan data tidak null.
+	
+LoginViewModel : testing dengan mockito
+	- postLoginV
+		Ketika berhasil login.
+			Memastikan data tidak null.
+	- postRegisterV
+		Ketika berhasil register.
+			Memastikan data tidak null.
+	
+StoryRepository : testing dengan fake
+	- getStoriesPage
+		Ketika berhasil mendapatkan data stories dari Api.
+			Memastikan data tidak null.
+	- getStoriesLoc
+		Ketika berhasil mendapatkan data stories with location dari Api.
+			Memastikan data tidak null.
+			Memastikan jumlah data sesuai dengan yang diharapkan.
+	- postStory
+		Ketika berhasil post data story ke Api.
+			Memastikan data tidak null.
+			Memastikan return message yang dihasilkan expected dan actual sama
+	- postLogin
+		Ketika berhasil post data login ke Api.
+			Memastikan data tidak null.
+			Memastikan return message yang dihasilkan expected dan actual sama.
+			Memastikan data login yang dihasilkan tidak null (login sukses)
+	- postRegister
+		Ketika berhasil post data register ke Api.
+			Memastikan data tidak null.
+			Memastikan return message yang dihasilkan expected dan actual sama
