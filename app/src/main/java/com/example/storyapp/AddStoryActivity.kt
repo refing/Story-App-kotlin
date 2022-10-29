@@ -133,6 +133,10 @@ class AddStoryActivity : AppCompatActivity() {
                         val responseBody = response.body()
                         if (responseBody != null && !responseBody.error) {
                             Toast.makeText(this@AddStoryActivity, responseBody.message, Toast.LENGTH_SHORT).show()
+                            // back to home
+                            // refresh home
+                            val moveIntent = Intent(this@AddStoryActivity, MainActivity::class.java)
+                            startActivity(moveIntent)
                         }
                     } else {
                         Toast.makeText(this@AddStoryActivity, response.message(), Toast.LENGTH_SHORT).show()

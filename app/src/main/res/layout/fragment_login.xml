@@ -5,10 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginFragment">
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!-- TODO: Update blank fragment layout -->
+        android:layout_height="match_parent"
+        app:layoutDescription="@xml/fragment_login_xml_constraintlayout_scene">
+
+        <TextView
+            android:id="@+id/textLogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/logo"
+            android:textAlignment="center"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.303"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.example.storyapp.customview.EmailText
             android:id="@+id/email_text"
             android:layout_width="0dp"
@@ -17,12 +36,12 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
             android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"/>
+            app:layout_constraintTop_toBottomOf="@+id/textLogo" />
 
         <com.example.storyapp.customview.PasswordText
             android:id="@+id/pw_text"
@@ -31,13 +50,13 @@
             android:layout_gravity="start"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:hint="@string/password"
+            android:inputType="textPassword"
             android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_text"
-            android:hint="@string/password"
-            android:inputType="textPassword"/>
+            app:layout_constraintTop_toBottomOf="@+id/email_text" />
 
         <com.example.storyapp.customview.LoginButton
             android:id="@+id/login_button"
@@ -49,7 +68,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pw_text"/>
+            app:layout_constraintTop_toBottomOf="@+id/pw_text" />
 
         <Button
             android:id="@+id/btn_register"
@@ -74,9 +93,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </LinearLayout>

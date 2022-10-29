@@ -33,7 +33,34 @@ class MainActivity : AppCompatActivity() {
         sessionModel = mSessionPreference.getSession()
 
         binding.rvStory.setHasFixedSize(true)
-        binding.tvTitle.text = "Welcome, ${sessionModel.name}"
+        binding.tvTitle.text = resources.getString(R.string.welcome_s, sessionModel.name)
+        binding.fabAddstory.setOnClickListener {
+            val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
+            moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
+            startActivity(moveIntent)
+        }
+        binding.btnLogout.setOnClickListener{
+            sessionModel = SessionModel("","")
+            mSessionPreference.setSession(sessionModel)
+
+
+            val i = Intent(this@MainActivity, LoginActivity::class.java)
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i)
+            this.finish()
+        }
+        getStories()
+    }
+    override fun onStart() {
+        super.onStart()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        mSessionPreference = Preference(this)
+        sessionModel = mSessionPreference.getSession()
+
+        binding.rvStory.setHasFixedSize(true)
+        binding.tvTitle.text = resources.getString(R.string.welcome_s, sessionModel.name)
         binding.fabAddstory.setOnClickListener {
             val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
             moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
