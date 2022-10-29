@@ -22,45 +22,30 @@ class StoryRepositoryTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    @Mock
     private lateinit var apiService: ApiService
-
-    @Mock
-    private lateinit var mockstoryRepository: StoryRepository
-
     private lateinit var storyRepository: StoryRepository
-    private val dummyToken = "token"
 
     @Before
     fun setUp() {
+        apiService = FakeApiService()
         storyRepository = StoryRepository(apiService)
     }
 
     @Test
-    fun `Get stories with pager - successfully`() = runTest {
-        val dummyStories = DataDummy.generateDummyStoriesEntity()
-        val data = StoryPagingSourceTest.snapshot(dummyStories)
-
-        val expectedResult = flowOf(data)
-
-        Mockito.`when`(mockstoryRepository.getStory(dummyToken)).thenReturn(expectedResult)
-
-        mockstoryRepository.getStory(dummyToken).observe(this) { actualResult ->
-            val differ = AsyncPagingDataDiffer(
-                diffCallback = StoryListAdapter.DiffCallback,
-                updateCallback = noopListUpdateCallback,
-                mainDispatcher = coroutinesTestRule.testDispatcher,
-                workerDispatcher = coroutinesTestRule.testDispatcher
-            )
-            differ.submitData(actualResult)
-
-            Assert.assertNotNull(differ.snapshot())
-            Assert.assertEquals(
-                dummyStoriesResponse.storyResponseItems.size,
-                differ.snapshot().size
-            )
-        }
-
+    fun `when getStoriesPage Should Not Null`() = runTest {
+        val expectedNews = DataDummy.generateDummyStoryResponse()
+        val actualNews = apiService.getStoriesPage("bearer",1,10)
+        Assert.assertNotNull(actualNews)
+        Assert.assertEquals(expectedNews.listStory.size, actualNews.listStory.size)
     }
+
+    @Test
+    fun `when getStoriesLoc Should Not Null`() = runTest {
+        val expectedNews = DataDummy.generateDummyStoryResponse()
+        val actualNews = apiService.getStoriesLoc("bearer")
+        Assert.assertNotNull(actualNews)
+        Assert.assertEquals(expectedNews.listStory.size, actualNews.listStory.size)
+    }
+
 
 }
