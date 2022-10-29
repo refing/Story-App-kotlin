@@ -37,8 +37,6 @@ class AddStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddStoryBinding
     private var getFile: File? = null
     private var bearer: String = ""
-//    private var lat: String = ""
-//    private var lon: String = ""
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
@@ -72,22 +70,6 @@ class AddStoryActivity : AppCompatActivity() {
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
-//    private val requestPermissionLauncher =
-//        registerForActivityResult(
-//            ActivityResultContracts.RequestMultiplePermissions()
-//        ) { permissions ->
-//            when {
-//                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true -> obtainlocation()
-//                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true -> obtainlocation()
-//            }
-//        }
-
-//    private fun checkPermission(permission: String): Boolean {
-//        return ContextCompat.checkSelfPermission(
-//            this,
-//            permission
-//        ) == PackageManager.PERMISSION_GRANTED
-//    }
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,7 +86,7 @@ class AddStoryActivity : AppCompatActivity() {
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        bearer = intent.getStringExtra(AddStoryActivity.EXTRA_TOKEN) as String
+        bearer = intent.getStringExtra(EXTRA_TOKEN) as String
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
@@ -112,30 +94,17 @@ class AddStoryActivity : AppCompatActivity() {
                 val lon = location.longitude.toString()
                 binding.tvlat.text = lat
                 binding.tvlon.text = lon
-                Log.e(TAG, "tes: ${lat} n ${lon}")
             }
         }
-//        binding.tvlat.text = lat
-//        binding.tvlon.text = lon
 
         binding.cameraXButton.setOnClickListener { startCameraX() }
         binding.cameraButton.setOnClickListener { startTakePhoto() }
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.uploadButton.setOnClickListener {
-//            obtainlocation()
             uploadImage()
             this.finish()
         }
-
-
-
-
     }
-//    @SuppressLint("MissingPermission")
-//    private fun obtainlocation(){
-//
-//
-//    }
 
     private fun startCameraX() {
         val intent = Intent(this, CameraActivity::class.java)
@@ -175,9 +144,6 @@ class AddStoryActivity : AppCompatActivity() {
             val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
             val lat2 = binding.tvlat.text.toString().toRequestBody("text/plain".toMediaType())
             val lon2 = binding.tvlon.text.toString().toRequestBody("text/plain".toMediaType())
-            Log.e(TAG, "tes2: ${lat2} n ${lon2}")
-            Log.e(TAG, "tes2: ${binding.tvlat.text} n ${binding.tvlon.text}")
-
             val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
                 "photo",
                 file.name,
@@ -193,8 +159,6 @@ class AddStoryActivity : AppCompatActivity() {
                         val responseBody = response.body()
                         if (responseBody != null && !responseBody.error) {
                             Toast.makeText(this@AddStoryActivity, responseBody.message, Toast.LENGTH_SHORT).show()
-                            // back to home
-                            // refresh home
                             val moveIntent = Intent(this@AddStoryActivity, MainActivity::class.java)
                             moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(moveIntent)

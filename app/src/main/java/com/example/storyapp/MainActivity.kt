@@ -6,15 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.api.*
 import com.example.storyapp.databinding.ActivityMainBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -23,21 +19,36 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
 
+    private var bearer: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
+            .get(MainViewModel::class.java)
+
+
+
+        mainViewModel.listStory.observe(this, { liststory ->
+            setStoryData(liststory)
+        })
+
+        mainViewModel.isLoading.observe(this, {
+            showLoading(it)
+        })
+
         mSessionPreference = Preference(this)
         sessionModel = mSessionPreference.getSession()
 
+        bearer = sessionModel.token ?: ""
 
         binding.rvStory.setHasFixedSize(true)
         binding.tvTitle.text = resources.getString(R.string.welcome_s, sessionModel.name)
         binding.fabAddstory.setOnClickListener {
             val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
-            moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
+            moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, bearer)
             startActivity(moveIntent)
         }
         binding.fabMaps.setOnClickListener {
@@ -48,72 +59,12 @@ class MainActivity : AppCompatActivity() {
             sessionModel = SessionModel("","")
             mSessionPreference.setSession(sessionModel)
 
-
             val i = Intent(this@MainActivity, LoginActivity::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i)
             this.finish()
         }
-        getStories()
-    }
-    override fun onStart() {
-        super.onStart()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        mSessionPreference = Preference(this)
-        sessionModel = mSessionPreference.getSession()
-
-        binding.rvStory.setHasFixedSize(true)
-        binding.tvTitle.text = resources.getString(R.string.welcome_s, sessionModel.name)
-        binding.fabAddstory.setOnClickListener {
-            val moveIntent = Intent(this@MainActivity, AddStoryActivity::class.java)
-            moveIntent.putExtra(AddStoryActivity.EXTRA_TOKEN, sessionModel.token)
-            startActivity(moveIntent)
-        }
-        binding.fabMaps.setOnClickListener {
-            val moveIntent = Intent(this@MainActivity, MapsActivity::class.java)
-            startActivity(moveIntent)
-        }
-        binding.btnLogout.setOnClickListener{
-            sessionModel = SessionModel("","")
-            mSessionPreference.setSession(sessionModel)
-
-
-            val i = Intent(this@MainActivity, LoginActivity::class.java)
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i)
-            this.finish()
-        }
-        getStories()
-    }
-    private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
-    private fun getStories() {
-        showLoading(true)
-        val client = ApiConfig.getApiService().getStories("Bearer ${sessionModel.token}")
-        client.enqueue(object : Callback<StoriesResponse> {
-            override fun onResponse(
-                call: Call<StoriesResponse>,
-                response: Response<StoriesResponse>
-            ) {
-                showLoading(false)
-                val responseBody = response.body()
-                if (response.isSuccessful && responseBody != null) {
-                    //populating rv
-                    listStory.clear()
-                    setStoryData(responseBody.listStory)
-                    showRecyclerList()
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                }
-            }
-            override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                showLoading(false)
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
+        mainViewModel.getStories(bearer)
     }
     private fun setStoryData(data: List<Stories>) {
         for (stories in data) {
@@ -128,10 +79,13 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
-        val adapter = StoryAdapter(listStory)
-        binding.rvStory.adapter = adapter
+        showRecyclerList()
+    }
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
     private fun showRecyclerList() {
+
         if (applicationContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             binding.rvStory.layoutManager = GridLayoutManager(this, 2)
         } else {

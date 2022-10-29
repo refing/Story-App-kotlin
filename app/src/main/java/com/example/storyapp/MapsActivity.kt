@@ -6,19 +6,17 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.storyapp.api.ApiConfig
+import androidx.lifecycle.ViewModelProvider
 import com.example.storyapp.api.Stories
-import com.example.storyapp.api.StoriesResponse
 import com.example.storyapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -27,12 +25,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapsBinding
 
     private var listStory: ArrayList<Story> = ArrayList()
-    private var listlatlon: ArrayList<LatLng> = ArrayList()
-    private var listlat: ArrayList<Double?> = ArrayList()
-    private var listlon: ArrayList<Double?> = ArrayList()
 
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
+
+    private val mainViewModel: MainViewModel by viewModels()
+
+    private var bearer: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,16 +42,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mSessionPreference = Preference(this)
         sessionModel = mSessionPreference.getSession()
 
+        bearer = sessionModel.token ?: ""
+
+        mainViewModel.isLoading.observe(this, {
+            showLoading(it)
+        })
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        mainViewModel.getStoriesLoc(bearer)
+
+
     }
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.map_options, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.map_options, menu)
+//        return true
+//    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.normal_type -> {
@@ -77,89 +87,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-//        val dicodingSpace = LatLng(-6.8957643, 107.6338462)
-//        mMap.addMarker(
-//            MarkerOptions()
-//                .position(dicodingSpace)
-//                .title("Dicoding Space")
-//                .snippet("Batik Kumeli No.50")
-//        )
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(dicodingSpace, 15f))
-
         mMap.uiSettings.isZoomControlsEnabled = true
 
-        getStoriesLoc()
+        mainViewModel.listStoryLoc.observe(this, { liststory ->
+            setStoryData(liststory)
+        })
+
         setMapStyle()
 
     }
     private val boundsBuilder = LatLngBounds.Builder()
-    private fun addManyMarker() {
 
-        listStory.forEach { tourism ->
-//            listlat.add(tourism.lat)
-//            listlon.add(tourism.lon)
-            val latLng = LatLng(tourism.lat!!, tourism.lon!!)
-//            listlatlon.add(latLng)
-            mMap.addMarker(MarkerOptions()
-                .position(latLng)
-                .title(tourism.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
-//                .icon(BitmapDescriptorFactory.fromPath(tourism.photoUrl!!)))
-            boundsBuilder.include(latLng)
+    private fun setMapStyle() {
+        try {
+            val success =
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (exception: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", exception)
         }
-        val bounds: LatLngBounds = boundsBuilder.build()
-        mMap.animateCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                bounds,
-                resources.displayMetrics.widthPixels,
-                resources.displayMetrics.heightPixels,
-                300
-            )
-        )
-//        Log.e(MapsActivity.TAG, "tes liststory: ${listStory}")
-//        Log.e(MapsActivity.TAG, "tes latlon: ${listlatlon}")
-//        Log.e(MapsActivity.TAG, "tes lat: ${listlat}")
-//        Log.e(MapsActivity.TAG, "tes lon: ${listlon}")
-
     }
-    private fun getStoriesLoc() {
-        showLoading(true)
-        val client = ApiConfig.getApiService().getStoriesLoc("Bearer ${sessionModel.token}")
-        client.enqueue(object : Callback<StoriesResponse> {
-            override fun onResponse(
-                call: Call<StoriesResponse>,
-                response: Response<StoriesResponse>
-            ) {
-                showLoading(false)
-                val responseBody = response.body()
-                if (response.isSuccessful && responseBody != null) {
-                    //populating rv
-                    listStory.clear()
-                    setStoryData(responseBody.listStory)
-                    addManyMarker()
 
-                } else {
-                    Log.e(MapsActivity.TAG, "onFailure: ${response.message()}")
-                }
-            }
-            override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                showLoading(false)
-                Log.e(MapsActivity.TAG, "onFailure: ${t.message}")
-            }
-        })
-    }
     private fun setStoryData(data: List<Stories>) {
         for (stories in data) {
             listStory.add(
@@ -173,17 +125,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 )
             )
         }
-    }
-    private fun setMapStyle() {
-        try {
-            val success =
-                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
-            if (!success) {
-                Log.e(TAG, "Style parsing failed.")
-            }
-        } catch (exception: Resources.NotFoundException) {
-            Log.e(TAG, "Can't find style. Error: ", exception)
+        listStory.forEach { tourism ->
+            val latLng = LatLng(tourism.lat!!, tourism.lon!!)
+            mMap.addMarker(MarkerOptions()
+                .position(latLng)
+                .title(tourism.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
+            boundsBuilder.include(latLng)
         }
+        val bounds: LatLngBounds = boundsBuilder.build()
+        mMap.animateCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                bounds,
+                resources.displayMetrics.widthPixels,
+                resources.displayMetrics.heightPixels,
+                300
+            )
+        )
+
     }
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
