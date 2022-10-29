@@ -3,12 +3,10 @@ package com.example.storyapp
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.storyapp.api.Stories
 import com.example.storyapp.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,8 +27,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
 
-    private val mainViewModel: MainViewModel by viewModels()
-
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelFactory(this)
+    }
     private var bearer: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,20 +48,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
 
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         mainViewModel.getStoriesLoc(bearer)
-
-
     }
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        menuInflater.inflate(R.menu.map_options, menu)
-//        return true
-//    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.normal_type -> {
@@ -111,15 +103,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.e(TAG, "Can't find style. Error: ", exception)
         }
     }
-
+    data class Story(
+        var name: String? = null,
+        var lat: Double? = null,
+        var lon: Double? = null)
     private fun setStoryData(data: List<Stories>) {
         for (stories in data) {
             listStory.add(
                 Story(
-                    stories.id,
                     stories.name,
-                    stories.description,
-                    stories.photoUrl,
                     stories.lat,
                     stories.lon,
                 )
@@ -153,3 +145,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 }
+

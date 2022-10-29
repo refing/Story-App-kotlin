@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.transition.TransitionInflater
 import com.example.storyapp.api.ApiConfig
 import com.example.storyapp.api.RegisterResponse
 import com.example.storyapp.customview.EmailText

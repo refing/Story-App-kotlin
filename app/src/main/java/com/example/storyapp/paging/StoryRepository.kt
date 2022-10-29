@@ -7,17 +7,15 @@ import androidx.paging.PagingData
 import androidx.paging.liveData
 import com.example.storyapp.api.ApiService
 import com.example.storyapp.api.Stories
-import com.example.storyapp.api.StoriesResponse
-import retrofit2.Call
 
-class StoryRepository(private val apiService: ApiService) {
+class StoryRepository(private val apiService: ApiService,private val token:String) {
     fun getStory(): LiveData<PagingData<Stories>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 5
             ),
             pagingSourceFactory = {
-                QuotePagingSource(apiService)
+                StoryPagingSource(apiService,token)
             }
         ).liveData
     }

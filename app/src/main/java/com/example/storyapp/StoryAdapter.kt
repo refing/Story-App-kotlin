@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.storyapp.DetailActivity.Companion.EXTRA_STORY
@@ -13,8 +13,7 @@ import com.example.storyapp.api.Stories
 import com.example.storyapp.databinding.ItemStoryBinding
 
 class StoryAdapter :
-    ListAdapter<Stories, StoryAdapter.MyViewHolder>(DiffCallback) {
-
+    PagingDataAdapter<Stories, StoryAdapter.MyViewHolder>(DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)

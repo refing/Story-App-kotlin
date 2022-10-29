@@ -13,7 +13,7 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val story = intent.getParcelableExtra<Story>(EXTRA_STORY) as Stories
+        val story = intent.getParcelableExtra<Stories>(EXTRA_STORY) as Stories
 
         Glide.with(this)
             .load(story.photoUrl)

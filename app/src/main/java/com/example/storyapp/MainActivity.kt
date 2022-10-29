@@ -12,13 +12,15 @@ import com.example.storyapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelFactory(this)
+    }
 
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
 
     private var bearer: String = ""
 
-    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,18 +70,19 @@ class MainActivity : AppCompatActivity() {
             binding.rvStory.layoutManager = LinearLayoutManager(this)
         }
         val listUserAdapter = StoryAdapter()
-        binding.rvStory.adapter = listUserAdapter
-
-        mainViewModel.getStories(bearer)
+        binding.rvStory.adapter = listUserAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                listUserAdapter.retry()
+            }
+        )
 
         mainViewModel.listStory.observe(this, {
-            listUserAdapter.submitList(it)
+            listUserAdapter.submitData(lifecycle,it)
         })
 
     }
 
     companion object {
-        private val TAG = MainActivity::class.java.simpleName
         const val EXTRA_TOKEN = "extra_token"
         const val EXTRA_NAME = "extra_name"
     }

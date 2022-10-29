@@ -5,9 +5,8 @@ import com.example.storyapp.api.ApiConfig
 
 object Injection {
     fun provideRepository(context: Context): StoryRepository {
-//        val database = StoryDatabase.getDatabase(context)
         val apiService = ApiConfig.getApiService()
-//        return StoryRepository(database, apiService)
-        return StoryRepository(apiService)
+        val token = context.getSharedPreferences("session_pref", Context.MODE_PRIVATE).getString("token","").toString()
+        return StoryRepository(apiService,token)
     }
 }
