@@ -4,16 +4,25 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.storyapp.api.ApiConfig
 import com.example.storyapp.api.Stories
 import com.example.storyapp.api.StoriesResponse
+import com.example.storyapp.paging.StoryRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainViewModel: ViewModel() {
+//    (storyRepository: StoryRepository)
     private val _listStory = MutableLiveData<List<Stories>>()
     val listStory: LiveData<List<Stories>> = _listStory
+
+//    val listStory: LiveData<PagingData<Stories>> =
+//        storyRepository.getStory().cachedIn(viewModelScope)
+
     private val _listStoryLoc = MutableLiveData<List<Stories>>()
     val listStoryLoc: LiveData<List<Stories>> = _listStoryLoc
     private val _isLoading = MutableLiveData<Boolean>()

@@ -3,37 +3,27 @@ package com.example.storyapp
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.storyapp.api.*
 import com.example.storyapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var listStory: ArrayList<Story> = ArrayList()
 
     private lateinit var mSessionPreference: Preference
     private lateinit var sessionModel: SessionModel
 
     private var bearer: String = ""
 
+    private val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
-            .get(MainViewModel::class.java)
-
-
-
-        mainViewModel.listStory.observe(this, { liststory ->
-            setStoryData(liststory)
-        })
 
         mainViewModel.isLoading.observe(this, {
             showLoading(it)
@@ -64,21 +54,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
             this.finish()
         }
-        mainViewModel.getStories(bearer)
-    }
-    private fun setStoryData(data: List<Stories>) {
-        for (stories in data) {
-            listStory.add(
-                Story(
-                    stories.id,
-                    stories.name,
-                    stories.description,
-                    stories.photoUrl,
-                    stories.lon,
-                    stories.lat
-                )
-            )
-        }
+
         showRecyclerList()
     }
     private fun showLoading(isLoading: Boolean) {
@@ -91,16 +67,15 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.rvStory.layoutManager = LinearLayoutManager(this)
         }
-        val listUserAdapter = StoryAdapter(listStory)
+        val listUserAdapter = StoryAdapter()
         binding.rvStory.adapter = listUserAdapter
 
-        listUserAdapter.setOnItemClickCallback(object : StoryAdapter.OnItemClickCallback {
-            override fun onItemClicked(data: Story) {
-                val moveWithObjectIntent = Intent(this@MainActivity, DetailActivity::class.java)
-                moveWithObjectIntent.putExtra(DetailActivity.EXTRA_STORY, data)
-                startActivity(moveWithObjectIntent)
-            }
+        mainViewModel.getStories(bearer)
+
+        mainViewModel.listStory.observe(this, {
+            listUserAdapter.submitList(it)
         })
+
     }
 
     companion object {

@@ -1,6 +1,8 @@
 package com.example.storyapp.api
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class LoginResponse (
     @field:SerializedName("loginResult")
@@ -43,6 +45,7 @@ data class StoriesResponse (
     val listStory: List<Stories>,
 )
 
+@Parcelize
 data class Stories (
     @field:SerializedName("id")
     val id: String,
@@ -61,7 +64,7 @@ data class Stories (
 
     @field:SerializedName("lon")
     val lon: Double,
-)
+): Parcelable
 
 data class PostStoryResponse (
     @field:SerializedName("error")

@@ -47,7 +47,15 @@ interface ApiService {
     fun getStoriesLoc(
         @Header("Authorization") bearer: String?,
 
-        ): Call<StoriesResponse>
+    ): Call<StoriesResponse>
 
+    //get stories need auth page and size
+    @GET("stories")
+    suspend fun getStoriesPage(
+        @Header("Authorization") bearer: String?,
+        @Query("page") page: Int,
+        @Query("size") size: Int
+
+    ): StoriesResponse
 
 }
