@@ -27,7 +27,6 @@ class StoryAdapter(private val listStory: ArrayList<Story>) : RecyclerView.Adapt
             .into(holder.binding.imgItemPhoto)
         holder.binding.tvItemUsername.text = name
         holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listStory[holder.adapterPosition]) }
-
     }
 
     override fun getItemCount(): Int = listStory.size

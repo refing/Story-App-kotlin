@@ -116,7 +116,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .position(latLng)
                 .title(tourism.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
-//                .icon(BitmapDescriptorFactory.fromBitmap(bmp)))
+//                .icon(BitmapDescriptorFactory.fromPath(tourism.photoUrl!!)))
             boundsBuilder.include(latLng)
         }
         val bounds: LatLngBounds = boundsBuilder.build()
@@ -191,4 +191,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         private val TAG = MapsActivity::class.java.simpleName
     }
+
+
 }
