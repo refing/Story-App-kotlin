@@ -100,4 +100,16 @@ class RegisterFragment : Fragment(), View.OnClickListener {
     private fun showLoading(isLoading: Boolean) {
         progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
+//    private fun postRegister(name: String, email: String,password: String) {
+//        showLoading(true)
+//        mainViewModel.postRegister(name,email,password).observe(this) { result ->
+//            result.onSuccess {
+//                Toast.makeText(activity, "Berhasil membuat akun.", Toast.LENGTH_SHORT).show()
+//            }
+//            result.onFailure {
+//                Toast.makeText(activity, "Gagal membuat akun.", Toast.LENGTH_SHORT).show()
+//
+//            }
+//        }
+//    }
 }

@@ -88,6 +88,7 @@ class LoginFragment : Fragment(), View.OnClickListener  {
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                 }
                 result.onFailure {
+                    Log.e("login fragment on failure", result.toString())
                     Toast.makeText(activity, "Login gagal.", Toast.LENGTH_SHORT).show()
                     showLoading(false)
                 }

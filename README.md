@@ -1,2 +1,0 @@
-# Dicoding-Intermediate-Story-App
- 
